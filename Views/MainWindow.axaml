@@ -1,0 +1,184 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TSP.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="TSP.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Traveling Salesman Problem Solver"
+        WindowState="Maximized">
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<Grid Grid.Row="0" Background="#ECEFF1">
+			<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,8">
+				<TextBlock VerticalAlignment="Center" Margin="0,0,8,0" FontSize="13">
+					Number of Cities
+				</TextBlock>
+				<TextBox x:Name="cityCount" Watermark="0-1000" Text="10" Width="60" VerticalAlignment="Center"/>
+				<Button Click="generateMap" Content="Generate Map" Margin="12,0,0,0" VerticalAlignment="Center"/>
+			</StackPanel>
+		</Grid>
+
+		<Grid Grid.Row="1" ColumnDefinitions="1*,1*" RowDefinitions="1*,1*">
+			<Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="4*,1*">
+				<Border BorderBrush="#B0BEC5" BorderThickness="1" Margin="4" Grid.Column="0">
+					<Canvas Background="White" x:Name="Canvas1">
+					</Canvas>
+				</Border>
+				<StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="4">
+					<Button x:Name="BruteForceButton" Click="doBruteForce" Margin="0,0,0,4">
+						<TextBlock>Brute Force</TextBlock>
+					</Button>
+					<Button x:Name="CancelBruteForce" Click="cancelBruteForce" IsEnabled="False" Margin="0,0,0,8" Background="#FFCDD2">
+						<TextBlock>✕</TextBlock>
+					</Button>
+					<Border BorderBrush="#B0BEC5" BorderThickness="1" CornerRadius="4" Padding="8" Background="White">
+						<StackPanel Orientation="Vertical">
+							<TextBlock FontSize="11" Foreground="#607D8B">Cost</TextBlock>
+							<TextBlock x:Name="Cost1" FontWeight="Bold" FontSize="14" Foreground="#263238">—</TextBlock>
+							<TextBlock FontSize="11" Foreground="#607D8B" Margin="0,6,0,0">Time</TextBlock>
+							<TextBlock x:Name="Compute1" FontWeight="Bold" FontSize="14" Foreground="#263238">—</TextBlock>
+						</StackPanel>
+					</Border>
+				</StackPanel>
+			</Grid>
+
+			<Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="4*,1*">
+				<Border BorderBrush="#B0BEC5" BorderThickness="1" Margin="4" Grid.Column="0">
+					<Canvas Background="White" x:Name="Canvas2">
+					</Canvas>
+				</Border>
+				<StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="4">
+					<Button x:Name="NearestNeighbourButton" Click="doNearestNeighbour" Margin="0,0,0,4">
+						<TextBlock>Nearest <LineBreak/>Neighbour</TextBlock>
+					</Button>
+					<Button x:Name="CancelNearestNeighbour" Click="cancelNearestNeighbour" IsEnabled="False" Margin="0,0,0,8" Background="#FFCDD2">
+						<TextBlock>✕</TextBlock>
+					</Button>
+					<Border BorderBrush="#B0BEC5" BorderThickness="1" CornerRadius="4" Padding="8" Background="White">
+						<StackPanel Orientation="Vertical">
+							<TextBlock FontSize="11" Foreground="#607D8B">Cost</TextBlock>
+							<TextBlock x:Name="Cost2" FontWeight="Bold" FontSize="14" Foreground="#263238">—</TextBlock>
+							<TextBlock FontSize="11" Foreground="#607D8B" Margin="0,6,0,0">Time</TextBlock>
+							<TextBlock x:Name="Compute2" FontWeight="Bold" FontSize="14" Foreground="#263238">—</TextBlock>
+						</StackPanel>
+					</Border>
+				</StackPanel>
+			</Grid>
+
+			<Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="4*,1*">
+				<Border BorderBrush="#B0BEC5" BorderThickness="1" Margin="4" Grid.Column="0">
+					<Canvas Background="White" x:Name="Canvas3">
+					</Canvas>
+				</Border>
+				<StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="4">
+					<Button x:Name="TwoOptButton" Click="doTwoOpt" Margin="0,0,0,4">
+						<TextBlock>2-Opt</TextBlock>
+					</Button>
+					<Button x:Name="CancelTwoOpt" Click="cancelTwoOpt" IsEnabled="False" Margin="0,0,0,8" Background="#FFCDD2">
+						<TextBlock>✕</TextBlock>
+					</Button>
+					<Border BorderBrush="#B0BEC5" BorderThickness="1" CornerRadius="4" Padding="8" Background="White">
+						<StackPanel Orientation="Vertical">
+							<TextBlock FontSize="11" Foreground="#607D8B">Cost</TextBlock>
+							<TextBlock x:Name="Cost3" FontWeight="Bold" FontSize="14" Foreground="#263238">—</TextBlock>
+							<TextBlock FontSize="11" Foreground="#607D8B" Margin="0,6,0,0">Time</TextBlock>
+							<TextBlock x:Name="Compute3" FontWeight="Bold" FontSize="14" Foreground="#263238">—</TextBlock>
+						</StackPanel>
+					</Border>
+				</StackPanel>
+			</Grid>
+
+			<Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="4*,1*">
+				<Border BorderBrush="#B0BEC5" BorderThickness="1" Margin="4" Grid.Column="0">
+					<Canvas Background="White" x:Name="Canvas4">
+					</Canvas>
+				</Border>
+				<StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="4">
+					<Button x:Name="EvolutionButton" Click="doEvolution" Margin="0,0,0,4">
+						<TextBlock>Evolution</TextBlock>
+					</Button>
+					<Button x:Name="CancelEvolution" Click="cancelEvolution" IsEnabled="False" Margin="0,0,0,8" Background="#FFCDD2">
+						<TextBlock>✕</TextBlock>
+					</Button>
+					<Border BorderBrush="#B0BEC5" BorderThickness="1" CornerRadius="4" Padding="8" Background="White">
+						<StackPanel Orientation="Vertical">
+							<TextBlock FontSize="11" Foreground="#607D8B">Cost</TextBlock>
+							<TextBlock x:Name="Cost4" FontWeight="Bold" FontSize="14" Foreground="#263238">—</TextBlock>
+							<TextBlock FontSize="11" Foreground="#607D8B" Margin="0,6,0,0">Time</TextBlock>
+							<TextBlock x:Name="Compute4" FontWeight="Bold" FontSize="14" Foreground="#263238">—</TextBlock>
+						</StackPanel>
+					</Border>
+				</StackPanel>
+			</Grid>
+		</Grid>
+
+		<Grid Grid.Row="2" Background="#ECEFF1">
+			<Grid Margin="12,8">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">
+					<Run Text="Starting Population Size (1n - 3n): " />
+					<Run Text="{Binding Value, ElementName=startPop}" />
+				</TextBlock>
+				<Slider x:Name="startPop" Maximum="3" Minimum="1" Grid.Row="0" Grid.Column="1" TickFrequency="1" IsSnapToTickEnabled="True"/>
+				<TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">
+					<Run Text="RNN Number of Cities k = " />
+					<Run Text="{Binding Value, ElementName=RNN}" />
+				</TextBlock>
+				<Slider x:Name="RNN" Maximum="20" Minimum="2" Value="5" Grid.Row="1" Grid.Column="1" TickFrequency="1" IsSnapToTickEnabled="True"/>
+				<TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">
+					<Run Text="OX Sequence Length in % of n = " />
+					<Run Text="{Binding Value, ElementName=OXSequenzLength}" />
+				</TextBlock>
+				<Slider x:Name="OXSequenzLength" Maximum="50" Minimum="5" Value="20" Grid.Row="2" Grid.Column="1" TickFrequency="0.01" IsSnapToTickEnabled="True"/>
+				<TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">
+					<Run Text="Mutation Probability: " />
+					<Run Text="{Binding Value, ElementName=mutationProb}" />
+				</TextBlock>
+				<Slider x:Name="mutationProb" Maximum="20" Minimum="0" Value="5" Grid.Row="3" Grid.Column="1" TickFrequency="0.01" IsSnapToTickEnabled="True"/>
+				<TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">
+					<Run Text="Tournament Size in % of Population: " />
+					<Run Text="{Binding Value, ElementName=tournamentSize}" />
+				</TextBlock>
+				<Slider x:Name="tournamentSize" Maximum="30" Minimum="1" Value="10" Grid.Row="4" Grid.Column="1" TickFrequency="0.01" IsSnapToTickEnabled="True"/>
+				<TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center">
+					<Run Text="Elitism in %: " />
+					<Run Text="{Binding Value, ElementName=elitism}" />
+				</TextBlock>
+				<Slider x:Name="elitism" Maximum="20" Minimum="0" Value="10" Grid.Row="5" Grid.Column="1" TickFrequency="0.01" IsSnapToTickEnabled="True"/>
+				<TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Center">
+					<Run Text="Maximum Generations: " />
+					<Run Text="{Binding Value, ElementName=maxGens}" />
+				</TextBlock>
+				<Slider x:Name="maxGens" Maximum="5000" Minimum="100" Value="500" Grid.Row="6" Grid.Column="1" TickFrequency="1" IsSnapToTickEnabled="True"/>
+				<TextBlock Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="12,0,0,0">
+					<Run Text="2-opt Probability: " />
+					<Run Text="{Binding Value, ElementName=twooptProb}" />
+				</TextBlock>
+				<Slider x:Name="twooptProb" Maximum="100" Minimum="0" Value="50" Grid.Row="0" Grid.Column="3" TickFrequency="0.01" IsSnapToTickEnabled="True"/>
+			</Grid>
+		</Grid>
+	</Grid>
+
+</Window>
