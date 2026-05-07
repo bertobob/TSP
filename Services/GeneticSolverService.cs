@@ -4,25 +4,30 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MoreLinq;
+using TSP.Config;
+using TSP.Interfaces;
 using TSP.Mapping;
 using TSP.Models;
 
 namespace TSP.Services
 {
-    public class GeneticSolverService
+    public class GeneticSolverService : ITspSolver
     {
         private readonly PathCostService pathCostService;
         private readonly TwoOptService twoOptService;
+        private readonly GeneticSolverConfig config;
 
-        public GeneticSolverService(PathCostService pathCostService, TwoOptService twoOptService)
+        public GeneticSolverService(
+            PathCostService pathCostService,
+            TwoOptService twoOptService,
+             GeneticSolverConfig config)
         {
             this.pathCostService = pathCostService;
             this.twoOptService = twoOptService;
+            this.config = config;
         }
 
-        public async Task<(List<int> Path, float Cost)> SolveAsync(Map map, int populationSize, int RNNCount,
-            double RNNProbability, int sequenzLength, double mutationProbability, int sizeTournament,
-            double elitismPercentage, int maxGenerations, double twoOptProbability, CancellationToken ct)
+        public async Task<(List<int> Path, float Cost)> SolveAsync(Map map, CancellationToken ct)
         {
             return await Task.Run(() =>
             {
@@ -37,18 +42,18 @@ namespace TSP.Services
                 List<Individual> tournament;
                 List<Individual> population = new List<Individual>();
                 List<Individual> nextGen;
-                CreateStartingPopulation(population, map, populationSize, ct, RNNCount, RNNProbability);
+                CreateStartingPopulation(population, map, this.config.PopulationSize, ct, this.config.RNNCount, this.config.RNNProbability);
 
                 int generationCounter = 0;
-                while (generationCounter < maxGenerations && !ct.IsCancellationRequested)
+                while (generationCounter < this.config.MaxGenerations && !ct.IsCancellationRequested)
                 {
                    
                     nextGen = new List<Individual>();
 
-                    if (elitismPercentage > 0)
+                    if (this.config.ElitismPercentage > 0)
                     {
                         population.Sort((a, b) => a.Fitness.CompareTo(b.Fitness));
-                        for (int i = 0; i < (int)(elitismPercentage * 0.01 * populationSize); i++)
+                        for (int i = 0; i < (int)(this.config.ElitismPercentage * 0.01 * this.config.PopulationSize); i++)
                         {
                             nextGen.Add(population[i]);
                         }
@@ -57,26 +62,26 @@ namespace TSP.Services
                     while (nextGen.Count < population.Count && !ct.IsCancellationRequested)
                     {
                         tournament = new List<Individual>();
-                        for (int i = 0; i < sizeTournament; i++)
+                        for (int i = 0; i < this.config.SizeTournament; i++)
                         {
                             tournament.Add(population[tournamentRandom.Next(0, population.Count)]);
                         }
                         parent1 = tournament.MinBy(a => a.Fitness)!;
 
                         tournament = new List<Individual>();
-                        for (int i = 0; i < sizeTournament; i++)
+                        for (int i = 0; i < this.config.SizeTournament; i++)
                         {
                             tournament.Add(population[tournamentRandom.Next(0, population.Count)]);
                         }
                         parent2 = tournament.MinBy(a => a.Fitness)!;
 
-                        child = GetChildOX(parent1, parent2, sequenzLength, map);
-                        if (mutationRandom.NextDouble() < mutationProbability)
+                        child = GetChildOX(parent1, parent2, this.config.SequenzLength, map);
+                        if (mutationRandom.NextDouble() < this.config.MutationProbability)
                         {
                             Mutate(child.Route);
                             child.Fitness = pathCostService.GetPathCost(child.Route, map);
                         }
-                        if (twoOptRandom.NextDouble() < twoOptProbability)
+                        if (twoOptRandom.NextDouble() < this.config.TwoOptProbability)
                         {
                             twoOptService.TwoOpt(child.Route, map);
                             child.Fitness = pathCostService.GetPathCost(child.Route, map);

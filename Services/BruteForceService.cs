@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using TSP.Interfaces;
 using TSP.Mapping;
 
 namespace TSP.Services
 {
-    public class BruteForceService
+    public class BruteForceService :ITspSolver
     {
         private readonly PathCostService pathCostService;
 
@@ -14,6 +15,8 @@ namespace TSP.Services
         {
             this.pathCostService = pathCostService;
         }
+
+       
 
         public async Task<(List<int> Path, float Cost)> SolveAsync(Map map, CancellationToken ct)
         {
