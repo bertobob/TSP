@@ -1,6 +1,7 @@
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using TSP.Config;
 using TSP.Services;
 using TSP.ViewModels;
 using TSP.Views;
@@ -20,7 +21,6 @@ namespace TSP
             services.AddSingleton<TwoOptService>();
             services.AddSingleton<BruteForceService>();
             services.AddSingleton<NearestNeighbourService>();
-            services.AddSingleton<GeneticSolverService>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<MainWindow>();
 

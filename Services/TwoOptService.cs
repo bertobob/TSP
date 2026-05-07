@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using TSP.Interfaces;
 using TSP.Mapping;
 
 namespace TSP.Services
 {
-    public class TwoOptService
+    public class TwoOptService : ITspSolver
     {
         private readonly PathCostService pathCostService;
 
